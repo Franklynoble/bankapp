@@ -1,0 +1,12 @@
+version: "1"
+packages:
+  - name: "db"   # the name of the go package that would  be generated
+    path: "./db/sqlc"   # the path to the folder to store the generated golang code
+    queries: "./db/query/"  #where to look for  the sqlc query files
+    schema: "./db/migration/"  # this should  point to the schema or database file
+    engine: "postgresql"   #database engine here  is postgresql, 
+    emit_json_tags: true   #add json to struct 
+    emit_prepared_queries: true
+    emit_interface: false
+    emit_exact_table_names: false
+
