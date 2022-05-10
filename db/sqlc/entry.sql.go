@@ -11,11 +11,11 @@ import (
 
 const getEntry = `-- name: GetEntry :one
 SELECT id, account_id, amount, created_at FROM entries
-WHERE account_id = $1 LIMIT $1
+WHERE id = $1 LIMIT  1
 `
 
-func (q *Queries) GetEntry(ctx context.Context, limit int32) (Entry, error) {
-	row := q.queryRow(ctx, q.getEntryStmt, getEntry, limit)
+func (q *Queries) GetEntry(ctx context.Context, id int64) (Entry, error) {
+	row := q.queryRow(ctx, q.getEntryStmt, getEntry, id)
 	var i Entry
 	err := row.Scan(
 		&i.ID,
@@ -68,19 +68,19 @@ func (q *Queries) ListEntries(ctx context.Context, arg ListEntriesParams) ([]Ent
 	return items, nil
 }
 
-const insertEntries = `-- name: insertEntries :one
+const createEntries = `-- name: createEntries :one
 INSERT INTO entries (account_id, amount) 
 VALUES ($1, $2)
 RETURNING id, account_id, amount, created_at
 `
 
-type insertEntriesParams struct {
+type createEntriesParams struct {
 	AccountID int64 `json:"account_id"`
 	Amount    int64 `json:"amount"`
 }
 
-func (q *Queries) insertEntries(ctx context.Context, arg insertEntriesParams) (Entry, error) {
-	row := q.queryRow(ctx, q.insertEntriesStmt, insertEntries, arg.AccountID, arg.Amount)
+func (q *Queries) createEntries(ctx context.Context, arg createEntriesParams) (Entry, error) {
+	row := q.queryRow(ctx, q.createEntriesStmt, createEntries, arg.AccountID, arg.Amount)
 	var i Entry
 	err := row.Scan(
 		&i.ID,
