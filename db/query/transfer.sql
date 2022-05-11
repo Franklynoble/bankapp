@@ -5,7 +5,7 @@ INSERT INTO transfers (
   amount
 ) VALUES (
   $1, $2, $3
-) RETURNING *;
+) RETURNING *; 
 
 -- name: GetTransfer :one
 SELECT * FROM transfers
