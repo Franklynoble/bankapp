@@ -89,6 +89,8 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		}
 
 		//TODO: UPDATE accounts balance
+		// the from account id has to be lesser than to account id, here
+		// to account id  is updated before  the from accountid
 		if arg.FromAccountID < arg.ToAccountID {
 			result.FromAccount, result.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
 		} else {
@@ -115,7 +117,7 @@ func addMoney(
 	})
 
 	if err != nil {
-		return
+		return // this  is similar to return account1, account2, err
 	}
 	account2, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
 		ID:     accountID2,

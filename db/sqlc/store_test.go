@@ -104,7 +104,7 @@ func TestTransferTx(t *testing.T) {
 		fmt.Println(">> tx;", fromAccount.Balance, toAccount.Balance)
 
 		diff1 := account1.Balance - fromAccount.Balance // calculate the difference between the two account(the differnec is the Amount of Money going Out of Account 1)
-		diff2 := toAccount.Balance - account2.Balance
+		diff2 := toAccount.Balance - account2.Balance   // the amount of Money going into account 2
 		require.Equal(t, diff1, diff2)
 		require.True(t, diff1 > 0)
 		require.True(t, diff1%amount == 0) // 1 * amount, 2* amount, 3 * amount ..., n * amount
@@ -117,9 +117,9 @@ func TestTransferTx(t *testing.T) {
 	}
 
 	//check the final updated  balance
-	updateAccount1, err := store.GetAccount(context.Background(), account1.ID)
+	updateAccount1, err := testQueries.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
-	updateAccount2, err := store.GetAccount(context.Background(), account2.ID)
+	updateAccount2, err := testQueries.GetAccount(context.Background(), account2.ID)
 	require.NoError(t, err)
 
 	fmt.Println(">> after:", updateAccount1.Balance, updateAccount2.Balance)
