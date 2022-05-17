@@ -21,6 +21,8 @@ func NewServer(store *db.Store) *Server {
 	router.POST("/accounts", server.createAccount)
 
 	router.GET("/accounts/:id", server.getAccount)
+	router.GET("/accounts", server.listAccount)
+
 	server.router = router // pass the instance of the gin
 	return server
 }

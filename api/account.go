@@ -62,8 +62,8 @@ func (server *Server) getAccount(ctx *gin.Context) {
 }
 
 type listAccountRequest struct {
-	PageID   int32 `form:"page_id" binding:"required, min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5, max=10"`
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
 func (server *Server) listAccount(ctx *gin.Context) {
@@ -80,11 +80,10 @@ func (server *Server) listAccount(ctx *gin.Context) {
 
 	accounts, err := server.store.ListAccounts(ctx, arg)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusInternalServerError, errResponse(err))
-		}
-
+		ctx.JSON(http.StatusInternalServerError, errResponse(err))
+		return
 	}
+
 	ctx.JSON(http.StatusOK, accounts)
 
 }

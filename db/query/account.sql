@@ -12,17 +12,16 @@ INSERT INTO accounts (
 SELECT * FROM accounts
 WHERE id = $1 LIMIT 1;
 
--- name: GetAccountForUpdate :one // this would remove shared lock cost by sharedLock deadLock
+-- name: GetAccountForUpdate :one 
 SELECT * FROM accounts  
 WHERE id = $1 LIMIT 1
-FOR NO KEY UPDATE;
+FOR NO KEY UPDATE; 
 
 -- name: ListAccounts :many
 SELECT * FROM accounts
-WHERE owner = $1
 ORDER BY id
-LIMIT $2
-OFFSET $3;
+LIMIT $1
+OFFSET $2;
 
 -- name: UpdateAccount :one
 UPDATE accounts 
