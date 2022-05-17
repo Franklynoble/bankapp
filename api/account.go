@@ -119,7 +119,29 @@ func (server *Server) updateAccount(ctx *gin.Context) {
 
 }
 
+type deletAccountRequest struct {
+	ID int64 `uri:"id" binding:"required"` //note when retriving you Must use caps for these fields
+}
+
 func (server *Server) deleteAccount(ctx *gin.Context) {
+	var req deletAccountRequest
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errResponse(err))
+		return
+	}
+	fmt.Print("retrived id: ", req.ID)
+	//arg := req.ID
+
+	err := server.store.DeleteAccount(ctx, req.ID)
+	fmt.Print("retrived id: Again ", req.ID)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errResponse(err))
+		return
+	}
+	fmt.Print("deleted with id", req.ID)
+	ctx.JSON(http.StatusOK, "Object Deleted")
 
 }
 
