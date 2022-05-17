@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	db "github.com/Franklynoble/bankapp/db/sqlc"
@@ -85,6 +86,40 @@ func (server *Server) listAccount(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, accounts)
+
+}
+
+type updateAccountRequest struct {
+	AccountID int64 `json:"id" binding:"required,min=1" `
+	Balance   int64 `json:"balance" binding:"required,min=0"`
+}
+
+//update account balance
+func (server *Server) updateAccount(ctx *gin.Context) {
+	var req updateAccountRequest
+
+	//use Bind JSON when using gin json binding
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		fmt.Print("error printed")
+		ctx.JSON(http.StatusBadRequest, errResponse(err))
+		return
+	}
+	arg := db.UpdateAccountParams{
+		ID:      req.AccountID,
+		Balance: req.Balance,
+	}
+	update, err := server.store.UpdateAccount(ctx, arg)
+
+	if err != nil {
+		fmt.Print("second  error")
+		ctx.JSON(http.StatusInternalServerError, errResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, update)
+
+}
+
+func (server *Server) deleteAccount(ctx *gin.Context) {
 
 }
 

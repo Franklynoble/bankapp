@@ -22,6 +22,7 @@ func NewServer(store *db.Store) *Server {
 
 	router.GET("/accounts/:id", server.getAccount)
 	router.GET("/accounts", server.listAccount)
+	router.PUT("/accounts", server.updateAccount)
 
 	server.router = router // pass the instance of the gin
 	return server
