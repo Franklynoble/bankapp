@@ -21,4 +21,8 @@ test: #run test including test coverage
 server:
 	 go run main.go  
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc  test server
+viper:
+	go get github.com/spf13/viper
+	
+	
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc  test server viper
