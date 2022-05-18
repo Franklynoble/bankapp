@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	config, err := util.LoadConfig(".") // this Load would come from current directory
+	config, err := util.LoadConfig(".") // this Load would come from current file
 
 	if err != nil {
 		log.Fatal("cannot loadss config:", err)
