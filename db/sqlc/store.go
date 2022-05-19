@@ -77,7 +77,7 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 			return err
 		}
 
-		result.FromEntry, err = q.createEntries(ctx, createEntriesParams{
+		result.FromEntry, err = q.CreateEntries(ctx, CreateEntriesParams{
 			AccountID: arg.FromAccountID,
 			Amount:    -arg.Amount,
 		})
@@ -85,7 +85,7 @@ func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (Tr
 			return err
 		}
 
-		result.ToEntry, err = q.createEntries(ctx, createEntriesParams{
+		result.ToEntry, err = q.CreateEntries(ctx, CreateEntriesParams{
 			AccountID: arg.ToAccountID,
 			Amount:    arg.Amount,
 		})

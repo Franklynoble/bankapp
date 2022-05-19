@@ -30,6 +30,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createAccountStmt, err = db.PrepareContext(ctx, createAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateAccount: %w", err)
 	}
+	if q.createEntriesStmt, err = db.PrepareContext(ctx, createEntries); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateEntries: %w", err)
+	}
 	if q.createTransferStmt, err = db.PrepareContext(ctx, createTransfer); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateTransfer: %w", err)
 	}
@@ -60,9 +63,6 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.updateAccountStmt, err = db.PrepareContext(ctx, updateAccount); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateAccount: %w", err)
 	}
-	if q.createEntriesStmt, err = db.PrepareContext(ctx, createEntries); err != nil {
-		return nil, fmt.Errorf("error preparing query createEntries: %w", err)
-	}
 	return &q, nil
 }
 
@@ -76,6 +76,11 @@ func (q *Queries) Close() error {
 	if q.createAccountStmt != nil {
 		if cerr := q.createAccountStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createAccountStmt: %w", cerr)
+		}
+	}
+	if q.createEntriesStmt != nil {
+		if cerr := q.createEntriesStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createEntriesStmt: %w", cerr)
 		}
 	}
 	if q.createTransferStmt != nil {
@@ -128,11 +133,6 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing updateAccountStmt: %w", cerr)
 		}
 	}
-	if q.createEntriesStmt != nil {
-		if cerr := q.createEntriesStmt.Close(); cerr != nil {
-			err = fmt.Errorf("error closing createEntriesStmt: %w", cerr)
-		}
-	}
 	return err
 }
 
@@ -174,6 +174,7 @@ type Queries struct {
 	tx                      *sql.Tx
 	addAccountBalanceStmt   *sql.Stmt
 	createAccountStmt       *sql.Stmt
+	createEntriesStmt       *sql.Stmt
 	createTransferStmt      *sql.Stmt
 	deleteAccountStmt       *sql.Stmt
 	getAccountStmt          *sql.Stmt
@@ -184,7 +185,6 @@ type Queries struct {
 	listEntriesStmt         *sql.Stmt
 	listTransfersStmt       *sql.Stmt
 	updateAccountStmt       *sql.Stmt
-	createEntriesStmt       *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -193,6 +193,7 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:                      tx,
 		addAccountBalanceStmt:   q.addAccountBalanceStmt,
 		createAccountStmt:       q.createAccountStmt,
+		createEntriesStmt:       q.createEntriesStmt,
 		createTransferStmt:      q.createTransferStmt,
 		deleteAccountStmt:       q.deleteAccountStmt,
 		getAccountStmt:          q.getAccountStmt,
@@ -203,6 +204,5 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		listEntriesStmt:         q.listEntriesStmt,
 		listTransfersStmt:       q.listTransfersStmt,
 		updateAccountStmt:       q.updateAccountStmt,
-		createEntriesStmt:       q.createEntriesStmt,
 	}
 }
