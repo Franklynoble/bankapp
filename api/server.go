@@ -25,6 +25,8 @@ func NewServer(store db.Store) *Server {
 	router.PUT("/accounts", server.updateAccount)
 	router.DELETE("/accounts/:id", server.deleteAccount)
 
+	router.POST("/transfers", server.createTransfer)
+
 	server.router = router // pass the instance of the gin
 	return server
 }
