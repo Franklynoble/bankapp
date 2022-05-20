@@ -13,6 +13,12 @@ migrateup:
 migratedown:
 	 migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
 
+migrateup1:
+	 migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up 1
+
+migratedown1:
+	 migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down 1	 
+
 sqlc:
 	 sqlc generate
 test: #run test including test coverage
@@ -27,4 +33,4 @@ viper:
 mock: 
 	mockgen -package mockdb -destination db/mock/store.go  github.com/Franklynoble/bankapp/db/sqlc Store	
   
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc  test server viper
+.PHONY: postgres createdb dropdb migrateup migratedown  migratedown1  migrateup1 sqlc test server viper
