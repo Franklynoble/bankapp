@@ -4,7 +4,7 @@ package util
 
 const (
 	USD = "USD"
-	EUR = "EUR"
+	 EUR = "EUR"
 	CAD = "CAD"
 )
 

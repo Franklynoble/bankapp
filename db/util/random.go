@@ -44,7 +44,7 @@ func RandomMoney() int64 {
 
 // RandomCurrency generate a  random currency code
 func RandomCurrency() string {
-	currencies := []string{"EUR", "USD", "CAD"}
+	currencies := []string{EUR, USD, CAD}
 
 	n := len(currencies) // comput the list of the currencies and assign it to n
 	return currencies[rand.Intn(n)]
