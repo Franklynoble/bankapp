@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	db "github.com/Franklynoble/bankapp/db/sqlc"
 	"github.com/Franklynoble/bankapp/db/util"
@@ -11,10 +12,18 @@ import (
 )
 
 type createUserRequest struct {
-	Username string `json:"username" binding:"required, alphanum"`
+	Username string `json:"username" binding:"required,alphanum"`
 	Password string `json:"password" binding:"required,min=6"`
-	Fullname string `json:"fullname" binding:"required"`
-	Email    string `json:"email" binding: "required,email"`
+	Fullname string `json:"full_name" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+}
+
+type createUserResponse struct {
+	Username          string    `json:"username"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -51,6 +60,16 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errResponse(err))
 		return
 	}
+
+	//change  the response body not to display  password
+	rsp := createUserResponse{
+		Username:          user.Username,
+		FullName:          user.FullName,
+		Email:             user.Email,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt:         user.CreatedAt,
+	}
+
 	// if no errors occour, the the account is successfully created
-	ctx.JSON(http.StatusOK, user)
+	ctx.JSON(http.StatusOK, rsp)
 }
