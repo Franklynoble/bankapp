@@ -12,10 +12,10 @@ import (
 
 // this func does not have a Test prefix, therefore it would not be run as a unit test
 func createRandomUser(t *testing.T) User {
-
+	hashedPassword, err := util.HashedPassword(util.Randomstring(6))
 	arg := CreateUserParams{
 		Username:       util.RandomOwner(),
-		HashedPassword: "secret",
+		HashedPassword: hashedPassword,
 		FullName:       util.RandomOwner(),
 		Email:          util.RandomEmail(),
 	}
