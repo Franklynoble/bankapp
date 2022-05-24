@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	mockdb "github.com/Franklynoble/bankapp/db/mock"
@@ -18,8 +20,35 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type eqCreateUserParamsMatcher struct {
+	arg      db.CreateUserParams
+	password string
+}
+
+func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
+	arg, ok := x.(db.CreateUserParams) //vonvert the interface to created params
+
+	if !ok {
+		return false
+	}
+	err := util.CheckPassword(e.password, arg.HashedPassword)
+	if err != nil {
+		return false
+	}
+	e.arg.HashedPassword = arg.HashedPassword
+	return reflect.DeepEqual(e.arg, arg)
+}
+
+func (e eqCreateUserParamsMatcher) String() string {
+	return fmt.Sprintf("matches arg %v and password %v", e.arg, e.password)
+}
+
+func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher {
+	return eqCreateUserParamsMatcher{arg, password}
+}
 func TestCreateUserAPI(t *testing.T) {
 	user, password := randomUser(t)
+
 	testCases := []struct {
 		name          string
 		body          gin.H
@@ -33,10 +62,17 @@ func TestCreateUserAPI(t *testing.T) {
 			"full_name": user.FullName,
 			"email":     user.Email,
 		},
+		// we expact the create user stub function to be called with two argument
 		buildStubs: func(store *mockdb.MockStore) {
-			store.EXPECT().CreateUser(gomock.Any(), gomock.Any()).
+			arg := db.CreateUserParams{
+				Username: user.Username,
+
+				FullName: user.FullName,
+				Email:    user.Email,
+			}
+			store.EXPECT().CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
 				Times(1).
-				Return(user, nil)
+				Return(user, nil) // return the user  object  with no error
 
 		},
 		checkResponse: func(recorder *httptest.ResponseRecorder) {
