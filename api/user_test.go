@@ -189,7 +189,7 @@ func TestCreateUserAPI(t *testing.T) {
 
 			tc.buildStubs(store) // create a build  tsubs  to set up stubs for that store
 
-			server := NewServer(store)         // create new Server using the mockstore
+			server := newTestServer(t, store)  // create new Server using the mockstore
 			recorder := httptest.NewRecorder() //create a http recorder to create response record for the call
 
 			//Marshal the input request body to JSON
