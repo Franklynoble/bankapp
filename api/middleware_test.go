@@ -19,6 +19,7 @@ func addAuthorization(
 	authorizationType string,
 	username string,
 	duration time.Duration) {
+
 	token, err := tokenMaker.CreateToken(username, duration)
 
 	require.NoError(t, err)
