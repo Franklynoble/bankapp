@@ -29,6 +29,7 @@ type userResponse struct {
 
 //convert the db.user object to user response
 func newUserResponse(user db.User) userResponse {
+
 	return userResponse{
 		Username:          user.Username,
 		FullName:          user.FullName,
@@ -36,9 +37,11 @@ func newUserResponse(user db.User) userResponse {
 		PasswordChangedAt: user.PasswordChangedAt,
 		CreatedAt:         user.CreatedAt,
 	}
+
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
+
 	var req createUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errResponse(err))
@@ -105,11 +108,12 @@ func (server *Server) loginUser(ctx *gin.Context) {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 			return
 		}
+
 		// or display the internal server error
 		ctx.JSON(http.StatusInternalServerError, errResponse(err))
 		return
 	}
-	//if password, check the password if it is valid
+	// if password, check the password if it is valid
 	err = util.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, errResponse(err))
