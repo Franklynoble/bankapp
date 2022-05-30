@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lib/pq v1.10.5
-	github.com/o1egl/paseto v1.0.0 // indirect
+	github.com/o1egl/paseto v1.0.0
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/spf13/viper v1.11.0
 	github.com/stretchr/testify v1.7.1

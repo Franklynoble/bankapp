@@ -14,6 +14,7 @@ import (
 
 // this func does not have a Test prefix, therefore it would not be run as a unit test
 func createRandomAccount(t *testing.T) Account {
+
 	user := createRandomUser(t)
 
 	arg := CreateAccountParams{
@@ -116,27 +117,29 @@ func TestListAccounts(t *testing.T) {
 **/
 
 func TestListAccounts(t *testing.T) {
-	//var lastAccount Account
+	var lastAccount Account // filter owner by lastAccount
 	for i := 0; i < 10; i++ {
-		createRandomAccount(t)
+		//create random generated  account
+		lastAccount = createRandomAccount(t)
 		//createRandomAccount(t)
 	}
 
 	arg := ListAccountsParams{
+		Owner:  lastAccount.Owner,
 		Limit:  5,
-		Offset: 5,
+		Offset: 0,
 	}
 
 	accounts, err := testQueries.ListAccounts(context.Background(), arg)
 
 	fmt.Println(accounts)
 	require.NoError(t, err)
-	require.Len(t, accounts, 5)
+	//require.NotEmpty(t, accounts)
 	require.NotEmpty(t, accounts)
 
 	for _, account := range accounts {
 		require.NotEmpty(t, account)
 		fmt.Println(account)
-		//require.Equal(t, lastAccount.Owner, account.Owner)
+		require.Equal(t, lastAccount.Owner, account.Owner) // the Result of the account owner is thesame as the last Account owner.
 	}
 }

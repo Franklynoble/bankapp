@@ -6,12 +6,12 @@ import (
 	"net/http"
 
 	db "github.com/Franklynoble/bankapp/db/sqlc"
+	"github.com/Franklynoble/bankapp/db/token"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
@@ -22,9 +22,11 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errResponse(err))
 		return
 	}
+	// create account payload
+	authPayload := ctx.MustGet(authorizationPayloadkey).(*token.Payload) // this returns an interface so convert  it to tokenpayload type
 	// get args for new account, for first time user
 	arg := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    authPayload.Username,
 		Currency: req.Currency,
 		Balance:  0,
 	}
@@ -60,13 +62,22 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errResponse(err))
 		return
 	}
+
 	account, err := server.store.GetAccount(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errResponse(err))
 		}
 		ctx.JSON(http.StatusInternalServerError, errResponse(err))
+		return
 
+	}
+	// create account payload
+	authPayload := ctx.MustGet(authorizationPayloadkey).(*token.Payload) // this returns an interface so convert  it to tokenpayload type
+
+	if account.Owner != authPayload.Username {
+		ctx.JSON(http.StatusUnauthorized, errResponse(err))
+		return
 	}
 	//account = db.Account{} for test
 	ctx.JSON(http.StatusOK, account)
@@ -78,21 +89,26 @@ type listAccountRequest struct {
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
-func (server *Server) listAccount(ctx *gin.Context) {
+func (server *Server) listAccounts(ctx *gin.Context) {
 	var req listAccountRequest
 
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errResponse(err))
 		return
 	}
+	// create account payload
+	authPayload := ctx.MustGet(authorizationPayloadkey).(*token.Payload) // this returns an interface so convert  it to tokenpayload type
 	arg := db.ListAccountsParams{
+		Owner:  authPayload.Username,
 		Limit:  req.PageSize,                    // this would be the page size
 		Offset: (req.PageID - 1) * req.PageSize, //number of records  the database should  skip
 	}
 
 	accounts, err := server.store.ListAccounts(ctx, arg)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errResponse(err))
+
 		return
 	}
 

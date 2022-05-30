@@ -22,7 +22,7 @@ type Server struct {
 //NewServer create a new HTTP server and setup all  routing
 
 func NewServer(config util.Config, store db.Store) (*Server, error) {
-	tokeMaker, err := token.NewJWTMaker(config.TokenSymmetricKey) // load this from  environment variable
+	tokeMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey) // load this from  environment variable
 
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %v", err)
@@ -47,16 +47,19 @@ func (server *Server) setupRouter() {
 	router := gin.Default()
 	router.POST("/users", server.createUser)
 
-	router.POST("/user/login", server.loginUser)
+	router.POST("/users/login", server.loginUser)
 
-	router.POST("/accounts", server.createAccount)
+	//using auth in the following authRoutes
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 
-	router.GET("/accounts/:id", server.getAccount)
-	router.GET("/accounts", server.listAccount)
-	router.PUT("/accounts", server.updateAccount)
-	router.DELETE("/accounts/:id", server.deleteAccount)
+	authRoutes.POST("/accounts", server.createAccount)
 
-	router.POST("/transfers", server.createTransfer)
+	authRoutes.GET("/accounts/:id", server.getAccount)
+	authRoutes.GET("/accounts", server.listAccounts)
+	authRoutes.PUT("/accounts", server.updateAccount)
+	authRoutes.DELETE("/accounts/:id", server.deleteAccount)
+
+	authRoutes.POST("/transfers", server.createTransfer)
 
 	server.router = router // pass the instance of the gin
 

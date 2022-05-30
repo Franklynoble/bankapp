@@ -51,5 +51,6 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 
 		//token is valid store the payload in the context and  pass in the  value
 		ctx.Set(authorizationPayloadkey, payload)
+		ctx.Next()
 	}
 }
