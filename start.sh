@@ -5,6 +5,8 @@ set -e
 
 #firstly, run db migration; pass in the path to all the db sequel files, the database url using  the emv variable
 echo "run db migration"
+
+source /app/app.env
 /app/migrate -path /app/migration -database "$DB_SOURCE" -verbose up 
 
 echo "start the app"
