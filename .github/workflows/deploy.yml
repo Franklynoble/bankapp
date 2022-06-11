@@ -42,9 +42,9 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t latest .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY
+        docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
       
-    - name:  Deploy image to Amazon EKS
+    - name: Deploy image to Amazon EKS
         run: |
         kubectl apply -f eks/aws-auth.yaml
         kubectl apply -f eks/deployment.yaml
