@@ -45,7 +45,7 @@ jobs:
         docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
       
     - name: Deploy image to Amazon EKS
-        run: |
+      run: |
         kubectl apply -f eks/aws-auth.yaml
         kubectl apply -f eks/deployment.yaml
         kubectl apply -f eks/service.yaml
